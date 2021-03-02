@@ -1,0 +1,433 @@
+#!/usr/local/bash
+#
+# Note: This script requires bash 4+
+#
+
+# https://vaneyckt.io/posts/safer_bash_scripts_with_set_euxo_pipefail/
+set -uo pipefail
+
+declare -A steps
+steps['cert-manager.1.name']='cert-manager'
+steps['cert-manager.1.path']='k8s/cert-manager'
+#
+steps["ingress.1.name"]="ingress-controller"
+steps["ingress.1.path"]="k8s/ingress/controller"
+steps["ingress.2.name"]="ingress-dns"
+steps["ingress.2.path"]="k8s/ingress/dns"
+steps["ingress.3.name"]="ingress-certs"
+steps["ingress.3.path"]="k8s/ingress/certs"
+steps["ingress.4.name"]="ingress-secret-operator"
+steps["ingress.4.path"]="k8s/ingress/secret-operator"
+#
+steps['kapp-controller.1.name']='kapp-controller'
+steps['kapp-controller.1.path']='k8s/kapp-controller'
+#
+steps["knative.1.name"]="knative"
+steps["knative.1.path"]="k8s/knative"
+#
+steps["kpack.1.name"]="kpack"
+steps["kpack.1.path"]="k8s/kpack"
+#
+steps["kubeapps.1.name"]="kubeapps"
+steps["kubeapps.1.path"]="k8s/kubeapps"
+#
+steps["registry.1.name"]="registry"
+steps["registry.1.path"]="k8s/registry"
+#
+steps["tekton.1.name"]="tekton"
+steps["tekton.1.path"]="k8s/tekton"
+#steps["tekton.1.name"]="tekton-release"
+#steps["tekton.1.path"]="k8s/tekton/release"
+#steps["tekton.2.name"]="tekton-triggers"
+#steps["tekton.2.path"]="k8s/tekton/triggers"
+#steps["tekton.3.name"]="tekton-dashboard"
+#steps["tekton.3.path"]="k8s/tekton/dashboard"
+#
+steps["eduk8s.1.name"]="eduk8s"
+steps["eduk8s.1.path"]="k8s/eduk8s"
+#
+steps["wavefront.1.name"]="wavefront"
+steps["wavefront.1.path"]="k8s/wavefront"
+#
+steps["eduk8s-labs.1.name"]="eduk8s-labs"
+steps["eduk8s-labs.1.path"]="k8s/eduk8s-labs"
+#
+steps['testapp.1.name']='testapp'
+steps['testapp.1.path']='k8s/testapp'
+#
+steps['testknativeapp.1.name']='testknativeapp'
+steps['testknativeapp.1.path']='k8s/testknativeapp'
+
+FULL_DEV="cert-manager ingress registry kpack tekton knative kubeapps wavefront testapp testknativeapp"
+FULL_EDUK8S="cert-manager ingress registry kpack tekton knative kubeapps wavefront testapp testknativeapp eduk8s eduk8s-labs"
+FULL_KNATIVE="cert-manager ingress registry knative testknativeapp"
+
+#install_log=$(mktemp install.log.XXXXXX)
+install_log=install.log
+
+SCRIPT_NAME=$(basename "$0")
+# Handle source locations that might be a symlink (ref: http://bit.ly/2kcvSCS)
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
+  DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE" # if $SOURCE was a relative symlink, we need to resolve it relative to the path where the symlink file was located
+done
+WORK_DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+
+#
+# Colors for echo
+# 
+RED='\033[0;31m'
+NC='\033[0m' # No Color
+
+#
+# CLI_ARGS
+SHOW_HELP="n"
+OVERRIDE_FILE=${OVERRIDE_FILE:-""}
+KUBECONFIG_FILE=${KUBECONFIG_FILE:-""}
+OVERLAY_FILE=${OVERLAY_FILE:-""}
+CONFIRM=${CONFIRM:-""}
+VERIFY=${VERIFY:-""}
+UNINSTALL=${VERIFY:-""}
+file_opt=""
+overlay_opt=""
+
+function validate_config {
+  local kubeconfig=""
+  if [ "$KUBECONFIG_FILE" != "" ]; then
+    kubeconfig="--kubeconfig=$KUBECONFIG_FILE"
+  fi
+  local CMD="kubectl ${kubeconfig} config view -o jsonpath='{ .contexts[?(@.name == \"'$(kubectl ${kubeconfig} config current-context 2>/dev/null)'\")].context.cluster }'"
+  local CLUSTER=`kubectl ${kubeconfig} config view -o jsonpath='{ .contexts[?(@.name == "'$(kubectl ${kubeconfig} config current-context 2>/dev/null)'")].context.cluster }' 2>/dev/null`
+  [ "x$CLUSTER" == "x" ] && echo "[ERROR] kubectl could not determine current cluster or is not installed" && echo "We executed the following command:" && echo "$CMD" && exit 1
+}
+
+#
+# Args:
+#  $1: app_name 
+#  $2: path
+function install_command {
+  local app_name=$1
+  local path=$2
+  [ -z "$app_name" ] || [ -z "$path" ] && echo "Error" && exit 1
+
+  local kubeconfig=""
+  if [ "$KUBECONFIG_FILE" != "" ]; then
+    kubeconfig=" --kubeconfig $KUBECONFIG_FILE"
+  fi
+
+  echo "ytt -f ${WORK_DIR}/k8s/values.yaml ${file_opt} -f ${WORK_DIR}/$path/upstream -f ${WORK_DIR}/$path/downstream -f ${WORK_DIR}/$path/config ${overlay_opt} --ignore-unknown-comments | kapp deploy -a $app_name --diff-changes -n default ${kubeconfig} -y -f -"
+  ytt -f ${WORK_DIR}/k8s/values.yaml ${file_opt} -f ${WORK_DIR}/$path/upstream -f ${WORK_DIR}/$path/downstream -f ${WORK_DIR}/$path/config ${overlay_opt} --ignore-unknown-comments | kapp deploy -a $app_name --diff-changes -n default ${kubeconfig} -y -f -
+}
+
+#
+# Args:
+#  $1: app_name 
+#  $2: path
+function uninstall_command {
+  local app_name=$1
+  local path=$2
+  [ -z "$app_name" ] || [ -z "$path" ] && echo "Error" && exit 1
+
+  local kubeconfig=""
+  if [ "${KUBECONFIG_FILE}" != "" ]; then
+    kubeconfig=" --kubeconfig ${KUBECONFIG_FILE}"
+  fi
+
+  echo "kapp delete -a ${app_name} -n default ${kubeconfig} -y"
+  kapp delete -a ${app_name} -n default ${kubeconfig} -y
+}
+
+function install_steps {
+  local step_name=$1
+  for i in {1..5}; do
+    if [ ! -z "${steps[$step_name.$i.name]:-}" ]; then
+      install_command "${steps[$step_name.$i.name]:-}" "${steps[$step_name.$i.path]:-}"
+    fi
+  done
+}
+
+function uninstall_steps {
+  local step_name=$1
+  for i in {5..1}; do
+    if [ ! -z "${steps[$step_name.$i.name]:-}" ]; then
+      uninstall_command "${steps[$step_name.$i.name]:-}" "${steps[$step_name.$i.path]:-}"
+    fi
+  done
+}
+
+# for step in cert-manager ingress knative kpack kubeapps registry tekton; do
+#   execute_all $step
+# done
+# execute_all tekton
+
+# exit 1
+
+function help {
+  echo "This is the ${FUNCNAME[0]} for ${SCRIPT_NAME}"
+  echo ""
+  echo "${SCRIPT_NAME} <COMMAND> <OPTIONS>"
+  echo ""
+  echo "Command:"
+  echo "    cert-manager       Installs cert-manager"
+  echo "    ingress            Installs an ingress controller to be used by the platform"
+  echo "    registry           Installs a clusterwide registry to be used by the platform"
+  echo "    kpack              Installs KPack to support in cluster builds using CNB"
+  echo "    tekton             Installs Tekton to support pipelines"
+  echo "    knative            Installs KNative to support scale to zero"
+  echo "    kubeapps           Installs Application Catalog capabiliites"
+  echo "    wavefront          Installs Observability integration with Wavefront"
+  echo "    eduk8s             Installs eduk8s platform"
+  echo "    eduk8s-labs        Installs eduk8s labs"
+  echo "    testapp            Installs a test application (kuard)"
+  echo "    testknativeapp     Installs a test application as a KNative service (kuard)"
+  echo ""
+  echo "    full-dev           Full Developer install (everything except eduk8s)"
+  echo "    full-eduk8s        Full Eduk8s install (everything)"
+
+  help-options
+}
+
+function help-options {
+  echo ""
+  echo "Options:"
+  echo "    -f=<FILE>|--file=<FILE>"
+  echo "    -f|--file <FILE>           Provides an override file to change default values"
+  echo "    -c|--confirm               Don't ask for confirmation. Execute the action immediately"
+  echo "    -v|--verify                Verifies the result of the process by executing a verification step"
+  echo "    -o=<FILE>|--overlay=<FILE>"
+  echo "    -o|--overlay <FILE>        Provides an overlay file, to alter install scripts"
+  echo "    -u|--uninstall             Uninstalls a component"
+  echo "    -k|--kubeconfig            Kubeconfig file to use"
+  echo "    -h|--help                  Shows the help for the command"
+}
+
+function execute {
+  local step=$1
+  shift
+  parse_args $*
+  local uninstall="no"
+
+  [ "$SHOW_HELP" == "true" ] && help $step && return 0
+
+  if [ ! -z $UNINSTALL ] ; then
+    OVERRIDE_FILE=""
+    OVERLAY_FILE=""
+    CONFIRM="true"
+    uninstall="yes"
+  fi 
+
+  if [ ! -z $OVERRIDE_FILE ] ; then 
+    if [ -f $OVERRIDE_FILE ]; then
+      file_opt=" -f $OVERRIDE_FILE "
+    else
+      echo "$OVERRIDE_FILE does not exist"
+      exit 1
+    fi
+  fi
+
+  if [ ! -z $OVERLAY_FILE ] ; then 
+    if [ -f $OVERLAY_FILE ]; then
+      overlay_opt=" -f $OVERLAY_FILE "
+    else
+      echo "$OVERLAY_FILE does not exist"
+      exit 1
+    fi
+  fi
+
+  if [ -n "$CONFIRM" ] && [ "$CONFIRM" == "true" ] ; then
+    reply="y"
+  else
+    echo -e "Cluster: ${RED}${CLUSTER}${NC}"
+    echo -e "Configuration: ${RED}${OVERRIDE_FILE}${NC}"
+    echo -e "Overlay: ${RED}${OVERLAY_FILE}${NC}"
+    echo ""
+    echo -e "Are you sure you want to install an $step with the following values? (y/n)"
+    read -n 1 -r reply
+    echo # move to a new line
+  fi
+  
+  if [[ $reply =~ ^[Yy]$ ]] ; then
+    if [ ! -z $UNINSTALL ] ; then
+      uninstall_steps $step
+    else
+      install_steps $step
+    fi
+  else
+    echo "Installation cancelled"
+    exit 1
+  fi
+}
+
+function help { 
+  local script=${1:-}
+  echo "Create a $script" 
+  echo ""
+  echo "${SCRIPT_NAME} $script <OPTIONS>"
+  help-options
+}
+
+function full {
+  local _list=${FULL_DEV}
+  if [ "$1" == "eduk8s" ]; then
+    _list=${FULL_EDUK8S}
+  elif [ "$1" == "knative" ]; then
+    _list=${FULL_KNATIVE}
+  fi
+  shift # Remove type of full install
+  parse_args $*
+
+  [ "$SHOW_HELP" == "true" ] && help.all && return 0
+
+  # Reverse order
+  if [ ! -z $UNINSTALL ] ; then
+    _list=$(echo "$_list" | awk '{ for (i=NF; i>1; i--) printf("%s ",$i); print $1; }')
+  fi 
+
+  for step in $_list ; do
+    execute $step
+  done
+}
+
+function help.all {
+  echo "Installs all neccesary additional components into an existing cluster"
+  help-options   
+} 
+
+function parse_args {
+  while [[ $# -gt 0 ]]
+  do
+    local key="$1"
+    case $key in
+      -h|--help)
+        SHOW_HELP="true"
+        shift # past argument
+        ;;
+      -k|--kubeconfig)
+        KUBECONFIG_FILE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      -k=*|--kubeconfig=*)
+        KUBECONFIG_FILE="${i#*=}"
+        shift # past argument
+        ;;
+      -v|--verify)
+        VERIFY="true"
+        shift # past argument
+        ;;
+      -f|--file)
+        OVERRIDE_FILE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      -f=*|--file=*)
+        OVERRIDE_FILE="${i#*=}"
+        shift # past argument
+        ;;
+      -o|--overlay)
+        OVERLAY_FILE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+      -o=*|--overlay=*)
+        OVERLAY_FILE="${i#*=}"
+        shift # past value
+        ;;
+      -c|--confirm)
+        CONFIRM="true"
+        shift # past argument
+        ;;
+      -u|--uninstall)
+        UNINSTALL="true"
+        shift # past argument
+        ;;
+      *)
+        echo "Wrong argument $key. Not supported"
+        exit 1
+        ;;
+    esac
+  done
+#  echo "SHOW_HELP=$SHOW_HELP"
+#  echo "OVERRIDE_FILE=$OVERRIDE_FILE"
+#  echo "OVERLAY_FILE=$OVERLAY_FILE"
+#  echo "CONFIRM=$CONFIRM"
+  validate_config
+}
+
+if [[ $# -gt 0 ]]
+then
+  key="$1"
+  case $key in
+    ingress)
+      shift # past argument
+      execute ingress "$@"
+      ;;
+    cert-manager)
+      shift # past argument
+      execute cert-manager "$@"
+      ;;
+    registry)
+      shift # past argument
+      execute registry "$@"
+      ;;
+    kpack)
+      shift # past argument
+      execute kpack "$@"
+      ;;
+    tekton)
+      shift # past argument
+      execute tekton "$@"
+      ;;
+    knative)
+      shift # past argument
+      execute knative "$@"
+      ;;
+    kubeapps)
+      shift # past argument
+      execute kubeapps "$@"
+      ;;
+    eduk8s)
+      shift # past argument
+      execute eduk8s "$@"
+      ;;
+    eduk8s-labs)
+      shift # past argument
+      execute eduk8s-labs "$@"
+      ;;
+    testapp)
+      shift # past argument
+      execute testapp "$@"
+      ;;
+    testknativeapp)
+      shift # past argument
+      execute testknativeapp "$@"
+      ;;
+    wavefront)
+      shift # past argument
+      execute wavefront "$@"
+      ;;
+    kapp-controller)
+      shift # past argument
+      execute kapp-controller "$@"
+      ;;
+    full-dev)
+      shift # past argument
+      full dev "$@"
+      ;;
+    full-eduk8s)
+      shift # past argument
+      full eduk8s "$@"
+      ;;
+    full-knative)
+      shift # past argument
+      full knative "$@"
+      ;;
+    *)
+      help "ingress|cert-manager|registry|kpack|tekton|knative|kubeapps|eduk8s|wavefront|eduk8s-labs|testapp|testknativeapp|full-dev|full-eduk8s"
+      ;;
+  esac
+else
+  help "ingress|cert-manager|registry|kpack|tekton|knative|kubeapps|eduk8s|wavefront|eduk8s-labs|testapp|full-dev|full-eduk8s"
+fi
