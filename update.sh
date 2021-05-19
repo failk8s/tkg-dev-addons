@@ -14,10 +14,34 @@
 
 OVERRIDE_NAME=""
 OVERRIDE_VERSION=""
+CONFIG_FILE=${CONFIG_FILE:-"config.yaml"}
 
-_path=$(cat config.json | jq -r '.path')
-_registry=$(cat config.json | jq -r '.registry')
-_list_packages=$(cat config.json | jq -r '.packages[] | "\(.name)/\(.version)#\(.name)#\(.version)"')
+_src_packages_path=$(cat $CONFIG_FILE | jq -r '.paths.sources.packages')
+_src_repo_path=$(cat $CONFIG_FILE | jq -r '.paths.sources.repository')
+_src_templates_path=$(cat $CONFIG_FILE | jq -r '.paths.sources.templates')
+_target_packages_path=$(cat $CONFIG_FILE | jq -r '.paths.target.packages')
+_target_repo_path=$(cat $CONFIG_FILE | jq -r '.paths.target.repository')
+_target_k8s_path=$(cat $CONFIG_FILE | jq -r '.paths.target.k8s')
+_registry=$(cat $CONFIG_FILE | jq -r '.registry')
+_repo_name=$(cat $CONFIG_FILE | jq -r '.repository.name')
+_repo_version=$(cat $CONFIG_FILE | jq -r '.repository.version')
+_list_packages=$(cat $CONFIG_FILE | jq -r '.packages[] | "\(.name)/\(.version)#\(.name)#\(.version)"')
+
+TMPFILE=""
+temp=$(basename $0)
+
+function create_temp_valuesfile {
+  TMPDIR=$(mktemp -d)
+  TMPFILE="$TMPDIR"/values.yaml
+  touch $TMPFILE
+  echo "#@data/values" >> $TMPFILE
+  echo "---" >>  $TMPFILE
+  cat $CONFIG_FILE >> $TMPFILE
+  echo $TMPFILE
+}
+function delete_temp_valuesfile {
+  rm -rf $TMPDIR
+}
 
 function update_all {
     for package in $_list_packages
@@ -28,27 +52,40 @@ function update_all {
 
 
 function update_one {
-    local _package=$1
+    local _packageNV=$1
     local _name=$2
     local _version=$3
-    if [ -d "$_path/$_package/bundle" ]; then
-        echo "Updating package: $_package"
-        pushd $_path/$_package/bundle &>/dev/null
-        vendir sync
-        kbld -f . --imgpkg-lock-output .imgpkg/images.yml
-    echo "    imgpkg push --bundle $_registry/$_name-package:$_version --file ."
+    if [ -d "$_src_packages_path/$_packageNV/bundle" ]; then
+        echo "Updating package: $_packageNV"
+        pushd $_src_packages_path/$_packageNV/bundle &>/dev/null
+        # Only vendir if not vendir lock file
+        if [ ! -e vendir.lock.yml ]; then
+          vendir sync
+        fi
+        if [ ! -e .imgpkg/images.yml ]; then
+          kbld -f . --imgpkg-lock-output .imgpkg/images.yml
+        fi
+        imgpkg push --bundle $_registry/$_name-package:$_version --file .
         popd &>/dev/null
     else
-        echo "Directory ($_path/$_package/bundle) for package ($package) does not exist"
+        echo "Directory ($_src_packages_path/$_packageNV/bundle) for package ($_packageNV) does not exist"
     fi
 }
 
-
-function update_repo {
-    # TODO: Fix this and add config to json
-    cd packages
-    imgpkg push -i quay.io/failk8s/tkgdev-repo:latest -f packages
-    cd -    
+function package_manifests {
+    create_temp_valuesfile
+    # Create packages
+    mkdir -p $_target_packages_path/packages
+    ytt -f $TMPFILE -f $_src_templates_path/package.yaml --output-files $_target_packages_path/packages
+    # Lock images
+    mkdir -p $_target_packages_path/.imgpkg
+    kbld -f $_target_packages_path/packages --imgpkg-lock-output $_target_packages_path/.imgpkg/images.yml
+    # Create repository
+    imgpkg push -b $_registry/$_repo_name:$_repo_version --file $_target_packages_path
+    mkdir -p $_target_k8s_path
+    # kbld the repository 
+    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml | kbld -f - > $_target_k8s_path/repository.yaml
+    delete_temp_valuesfile
 }
 
 function parse_args {
@@ -86,6 +123,10 @@ then
       shift # past argument
       parse_args $*
       update_one "$OVERRIDE_NAME/$OVERRIDE_VERSION" "$OVERRIDE_NAME" "$OVERRIDE_VERSION"
+      ;;
+    package-manifests)
+      shift # past argument
+      package_manifests
       ;;
     *)
       echo "You need to update-all or update -n PACKAGE_NAME -v PACKAGE_VERSION "

@@ -1,17 +1,20 @@
+#@ load("@ytt:data", "data")
+
+#@ for package in data.values.packages:
+---
 apiVersion: package.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: contour.tkgdev.failk8s.com.1.15.1
+  name: #@ "{}.{}".format(package.name, data.values.domain, package.version)
 spec:
-  publicName: contour.tkgdev.failk8s.com
-  version: "1.15.1"
-  description: Contour installation
+  publicName: #@ "{}.{}".format(package.name, data.values.domain, data.values.domain)
+  version: #@ package.version
   template:
     spec:
       syncPeriod: 30s
       fetch:
         - imgpkgBundle:
-            image: quay.io/failk8s/contour-package:1.15.1
+            image: #@ "{}/{}-package:{}".format(data.values.registry, package.name, package.version)
       template:
         - ytt:
             ignoreUnknownComments: true
@@ -24,3 +27,4 @@ spec:
       deploy:
         - kapp:
             rawOptions: ["--wait-timeout=5m"]
+#@ end 

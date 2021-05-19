@@ -1,0 +1,38 @@
+{
+    "domain": "tkgdev.failk8s.com",
+    "repository": {
+        "name": "tkgdev-repo",
+        "version": "1.0.0"
+    },
+    "registry": "quay.io/failk8s",
+    "paths": {
+        "sources": {
+            "packages": "src/packages",
+            "repository": "src/repo",
+            "templates": "src/templates"
+        },
+        "target": {
+            "packages": "target/packages",
+            "repository": "target/repo",
+            "k8s": "target/k8s"
+        }
+    },
+    "packages": [
+        {
+            "name": "cert-manager",
+            "version": "1.1.0"
+        },
+        {
+            "name": "cert-manager",
+            "version": "1.3.1"
+        },
+        {
+            "name": "contour",
+            "version": "1.10.0"
+        },
+        {
+            "name": "knative-serving",
+            "version": "0.21.0"
+        }
+    ]
+}

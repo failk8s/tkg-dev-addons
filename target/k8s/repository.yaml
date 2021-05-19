@@ -1,0 +1,16 @@
+---
+apiVersion: install.package.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  annotations:
+    kbld.k14s.io/images: |
+      - Metas:
+        - Tag: 1.0.0
+          Type: resolved
+          URL: quay.io/failk8s/tkgdev-repo:1.0.0
+        URL: quay.io/failk8s/tkgdev-repo@sha256:84f97ee9c112007f38065e568558b30c47c4385347d74cfd8debe42703c46441
+  name: tkgdev.failk8s.com
+spec:
+  fetch:
+    imgpkgBundle:
+      image: quay.io/failk8s/tkgdev-repo@sha256:84f97ee9c112007f38065e568558b30c47c4385347d74cfd8debe42703c46441

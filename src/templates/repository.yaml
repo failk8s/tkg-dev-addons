@@ -1,0 +1,10 @@
+#@ load("@ytt:data", "data")
+---
+apiVersion: install.package.carvel.dev/v1alpha1
+kind: PackageRepository
+metadata:
+  name: #@ data.values.domain
+spec:
+  fetch:
+    imgpkgBundle:
+      image: #@ "{}/{}:{}".format(data.values.registry, data.values.repository.name, data.values.repository.version)
