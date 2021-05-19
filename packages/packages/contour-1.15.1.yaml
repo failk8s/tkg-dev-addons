@@ -1,0 +1,26 @@
+apiVersion: package.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: contour.tkgdev.failk8s.com.1.15.1
+spec:
+  publicName: contour.tkgdev.failk8s.com
+  version: "1.15.1"
+  description: Contour installation
+  template:
+    spec:
+      syncPeriod: 30s
+      fetch:
+        - imgpkgBundle:
+            image: quay.io/failk8s/contour-package:1.15.1
+      template:
+        - ytt:
+            ignoreUnknownComments: true
+            paths:
+              - config/
+        - kbld:
+            paths:
+              - "-"
+              - .imgpkg/images.yml
+      deploy:
+        - kapp:
+            rawOptions: ["--wait-timeout=5m"]
