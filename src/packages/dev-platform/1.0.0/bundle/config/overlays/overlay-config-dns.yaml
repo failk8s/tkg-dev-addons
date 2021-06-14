@@ -1,0 +1,15 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@ def config():
+domain: #@ data.values.domain
+provider: aws
+aws:
+  access_key_id: #@ data.values.aws.access_key_id
+  secret_access_key: #@ data.values.aws.secret_access_key
+#@ end
+
+#@overlay/match by=overlay.subset({"kind": "Secret", "metadata":{"name":"dns-config"}})
+---
+stringData:
+  values.yml: #@ yaml.encode(config())

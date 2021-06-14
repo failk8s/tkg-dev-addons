@@ -25,9 +25,10 @@ _target_k8s_path=$(cat $CONFIG_FILE | jq -r '.paths.target.k8s')
 _registry=$(cat $CONFIG_FILE | jq -r '.registry')
 _repo_name=$(cat $CONFIG_FILE | jq -r '.repository.name')
 _repo_version=$(cat $CONFIG_FILE | jq -r '.repository.version')
-_list_packages=$(cat $CONFIG_FILE | jq -r '.packages[] | "\(.name)/\(.version)#\(.name)#\(.version)"')
+_list_packages=$(cat $CONFIG_FILE | jq -r '.packages[] | .versions[] as $item | "\(.name)/\($item)#\(.name)#\($item)"')
 
 TMPFILE=""
+VALUEFILE=""
 temp=$(basename $0)
 
 function create_temp_valuesfile {
@@ -40,6 +41,23 @@ function create_temp_valuesfile {
   echo $TMPFILE
 }
 function delete_temp_valuesfile {
+  rm -rf $TMPDIR
+}
+
+function create_package_valuesfile {
+  TMPDIR=$(mktemp -d)
+  VALUEFILE="$TMPDIR"/data-value.yaml
+  touch $VALUEFILE
+  echo "#@data/values" >> $VALUEFILE
+  echo "---" >>  $VALUEFILE
+  echo "#@overlay/replace" >> $VALUEFILE
+  echo "packages:" >>  $VALUEFILE
+  echo "  - name: $1" >>  $VALUEFILE
+  echo "    versions:" >>  $VALUEFILE
+  echo "      - $2" >>  $VALUEFILE
+  echo $VALUEFILE
+}
+function delete_package_valuesfile {
   rm -rf $TMPDIR
 }
 
@@ -72,11 +90,28 @@ function update_one {
     fi
 }
 
-function package_manifests {
+
+function package_all {
+    for package in $_list_packages
+    do
+      echo "package_one $(echo $package | tr '#' ' ')"
+        package_one $(echo $package | tr "#" " ")
+    done
+}
+
+function package_one {
+    local _packageNV=$1
+    local _name=$2
+    local _version=$3
+
     create_temp_valuesfile
+    create_package_valuesfile $_name $_version
     # Create packages
-    mkdir -p $_target_packages_path/packages
-    ytt -f $TMPFILE -f $_src_templates_path/package.yaml --output-files $_target_packages_path/packages
+    mkdir -p $_target_packages_path/packages/$_name
+    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/package.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
+    # Create package versions
+    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/packageversion.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
+    mv $_target_packages_path/packages/$_name/packageversion.yaml $_target_packages_path/packages/$_name/$_version.yaml
     # Lock images
     mkdir -p $_target_packages_path/.imgpkg
     kbld -f $_target_packages_path/packages --imgpkg-lock-output $_target_packages_path/.imgpkg/images.yml
@@ -84,8 +119,9 @@ function package_manifests {
     imgpkg push -b $_registry/$_repo_name:$_repo_version --file $_target_packages_path
     mkdir -p $_target_k8s_path
     # kbld the repository 
-    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml | kbld -f - > $_target_k8s_path/repository.yaml
+    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml --ignore-unknown-comments | kbld -f - > $_target_k8s_path/repository.yaml
     delete_temp_valuesfile
+    delete_package_valuesfile
 }
 
 function parse_args {
@@ -124,9 +160,14 @@ then
       parse_args $*
       update_one "$OVERRIDE_NAME/$OVERRIDE_VERSION" "$OVERRIDE_NAME" "$OVERRIDE_VERSION"
       ;;
-    package-manifests)
+    package-all)
       shift # past argument
-      package_manifests
+      package_all "$@"
+      ;;
+    package)
+      shift # past argument
+      parse_args $*
+      package_one "$OVERRIDE_NAME/$OVERRIDE_VERSION" "$OVERRIDE_NAME" "$OVERRIDE_VERSION"
       ;;
     *)
       echo "You need to update-all or update -n PACKAGE_NAME -v PACKAGE_VERSION "

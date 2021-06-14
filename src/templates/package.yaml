@@ -2,29 +2,31 @@
 
 #@ for package in data.values.packages:
 ---
-apiVersion: package.carvel.dev/v1alpha1
+apiVersion: data.packaging.carvel.dev/v1alpha1
 kind: Package
 metadata:
-  name: #@ "{}.{}".format(package.name, data.values.domain, package.version)
+  name: #@ "{}.{}".format(package.name, data.values.domain)
 spec:
-  publicName: #@ "{}.{}".format(package.name, data.values.domain, data.values.domain)
-  version: #@ package.version
-  template:
-    spec:
-      syncPeriod: 30s
-      fetch:
-        - imgpkgBundle:
-            image: #@ "{}/{}-package:{}".format(data.values.registry, package.name, package.version)
-      template:
-        - ytt:
-            ignoreUnknownComments: true
-            paths:
-              - config/
-        - kbld:
-            paths:
-              - "-"
-              - .imgpkg/images.yml
-      deploy:
-        - kapp:
-            rawOptions: ["--wait-timeout=5m"]
+  # Human friendly name of the package (optional; string)
+  #@ if/end hasattr(package, "displayName") and package.displayName:
+  displayName: #@ package.displayName
+#!  # Long description of the package (optional; string; alpha.7+)
+#!  longDescription: "Fluent bit is an open source..."
+#!  # Short desription of the package (optional; string; alpha.7+)
+#!  shortDescription: "Log processing and forwarding"
+#!  # Base64 encoded icon (optional; string; alpha.7+)
+#!  iconSVGBase64: YXNmZGdlcmdlcg==
+#!  # Name of the entity distributing the package (optional; string; alpha.7+)
+#!  providerName: VMware
+#!  # List of maintainer info for the package.
+#!  # Currently only supports the name key. (optional; array of maintner info; alpha.7+)
+#!  maintainers:
+#!  - name: "Person 1"
+#!  - name: "Person 2"
+#!  # Classifiers of the package (optional; Array of strings; alpha.7+)
+#!  categories:
+#!  - "logging"
+#!  - "daemon-set"
+#!  # Description of the support available for the package (optional; string; alpha.7+)
+#!  supportDescription: "..."
 #@ end 

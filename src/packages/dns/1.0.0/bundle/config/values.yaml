@@ -1,0 +1,47 @@
+#@data/values
+---
+#! The namespace in which to deploy ExternalDNS.
+namespace: external-dns
+
+#! Domain that ExternalDNS will use
+domain: REPLACE_ME
+
+#! privileged_clusterrole_name:  #! In TMC clusters is: vmware-system-tmc-psp-privileged
+
+image:
+  name: k8s.gcr.io/external-dns/external-dns:v0.8.0
+  pullPolicy: "IfNotPresent"
+
+#! DNS provider to use
+provider: #! Values are aws, bind, azure
+
+#! Which types of objects will be watched for annotations
+target:
+  service: True #! True/False
+  ingress: True #! True/False
+  contour: True #! True/False. Defines whether we should deploy contour integration for external-dns
+
+#! AWS specific configuration
+aws:
+  access_key_id: REPLACE_ME
+  secret_access_key: REPLACE_ME
+  zone_type: public #! only look at public hosted zones (valid values are public, private or no value for both)
+  policy: upsert-only #! would prevent ExternalDNS from deleting any records, omit to enable full synchronization
+  txt_owner: k8s #! This is to identify the owner of the txt records so that external-dns don't mess with existing records, you can use Route53 hosted zone identifier for my-zone.example.org
+
+#! BIND specific configuration
+bind:
+  txt_owner: k8s
+  host: REPLACE_ME #! IP of RFC2136 compatible dns server
+  port: 53
+  tsig:
+    secret: REPLACE_ME
+    secret_alg: hmac-sha256
+    keyname: externaldns-key
+
+#! AZURE specific configuration
+azure:
+  resource_group:  #! TODO: Assert
+
+#! TODO: Add security context
+securityContext: {} 

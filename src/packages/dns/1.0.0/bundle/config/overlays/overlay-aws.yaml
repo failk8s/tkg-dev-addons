@@ -1,0 +1,51 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@ if/end data.values.provider=="aws":
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: route53-externaldns-iam
+  namespace:  #@ data.values.namespace
+data:
+  aws_access_key_id: #@ base64.encode(data.values.aws.access_key_id)
+  aws_secret_access_key: #@ base64.encode(data.values.aws.secret_access_key)
+
+#@overlay/match by=overlay.subset({"kind":"Deployment", "metadata": {"name": "external-dns"}})
+#@overlay/match-child-defaults missing_ok=True
+---
+spec:
+  template:
+    spec:
+      containers:
+      #@overlay/match by=overlay.map_key("name")
+      - name: external-dns
+        #@overlay/replace
+        args:
+          - --provider=aws
+          - #@ "--aws-zone-type={}".format(data.values.aws.zone_type or "")
+          #@ if/end data.values.target.service==True:
+          - --source=service
+          #@ if/end data.values.target.ingress==True:
+          - --source=ingress
+          #@ if/end data.values.target.contour==True:
+          - --source=contour-httpproxy
+          - #@ "--policy={}".format(data.values.aws.policy or "")
+          - --aws-prefer-cname
+          - --registry=txt
+          - --txt-prefix=txt #! disambiguates TXT records from CNAME records
+          - #@ "--domain-filter={}".format(data.values.domain or "")
+          - #@ "--txt-owner-id={}".format(data.values.aws.txt_owner) 
+        env:
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: route53-externaldns-iam
+                key: aws_access_key_id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: route53-externaldns-iam
+                key: aws_secret_access_key

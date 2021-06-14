@@ -1,0 +1,16 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: InstalledPackage
+metadata:
+  name: contour
+  namespace: dev-platform-ctrl
+spec:
+  serviceAccountName: dev-platform-ctrl-sa
+  packageVersionRef:
+    packageName: contour.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.10.0"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: contour-config

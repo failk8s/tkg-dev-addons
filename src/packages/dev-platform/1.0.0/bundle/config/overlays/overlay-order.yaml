@@ -1,0 +1,62 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"cert-manager"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "cert-manager"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting rbac"
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"contour"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "contour"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting cert-manager"
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"certs"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "certs"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting contour"
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"dns"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "dns"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting certs"
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"registry"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "registry"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting dns"
+
+#@overlay/match by=overlay.subset({"kind": "InstalledPackage", "metadata":{"name":"knative-serving"}}), expects="1+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-group: "knative-serving"
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule: "upsert after upserting dns"

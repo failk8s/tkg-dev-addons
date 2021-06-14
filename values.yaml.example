@@ -1,0 +1,37 @@
+#@data/values
+---
+domain:
+wildcard_domain:
+privileged_clusterrole_name:  #! In TMC clusters is: vmware-system-tmc-psp-privileged
+cluster_type: tmc  #! Values are: tmc, tkg, minikube 
+local:
+  root_ca:
+    key: #! Add your local CA key in case of cluster_type=minikube
+    crt: #! Add your local CA crt in case of cluster_type=minikube
+aws:
+  access_key_id: <FILL_YOUR_INFO>
+  secret_access_key: <FILL_YOUR_INFO>
+  certs:
+    email: user@example.com
+    region: eu-west-1
+provided: #! Provide a wildcard certificate, and we will not use a cert-manager Certificate with Let's Encrypt
+  wildcard_tls:
+    #! Provide your tls.crt with yaml |
+    crt:
+    #! Provide your tls.key with yaml |
+    key:
+ingress:
+  namespace: tanzu-developer
+  type: contour
+externaldns:
+  name: external-dns
+  owner: tanzu
+registry:
+  namespace: tanzu-developer
+  admin:
+    username: admin
+    password: admin123!
+  secrets:
+    #! Generate the secret by doing: `htpasswd -nb admin admin123!` or whatever user/password you want
+    htpasswd: 'admin:$2a$10$UJ9q77n9Vc0d8ppxomAxaeleIaeNX/5faYnt/PZLK20awaxSjxOgy'
+    hashared: replicated

@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: 'Merge pull request #2070 from kubernetes-sigs/raffo/bump-ci-timeout...'
+      sha: b5f9d789743113f6af3d4f20f9439842e73a1110
+      tags:
+      - v0.8.0
+    path: .
+  path: config/upstream/external-dns
+kind: LockConfig

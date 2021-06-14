@@ -1,0 +1,24 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageVersion
+metadata:
+  name: cert-manager.tkgdev.failk8s.com.1.3.1
+spec:
+  packageName: cert-manager.tkgdev.failk8s.com
+  version: 1.3.1
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: quay.io/failk8s/cert-manager-package:1.3.1
+      template:
+      - ytt:
+          paths:
+          - config/
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m

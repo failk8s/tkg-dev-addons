@@ -1,0 +1,11 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+
+#@ def config():
+domain: #@ data.values.domain
+#@ end
+
+#@overlay/match by=overlay.subset({"kind": "Secret", "metadata":{"name":"cert-manager-config"}})
+---
+stringData:
+  values.yml: #@ yaml.encode(config())

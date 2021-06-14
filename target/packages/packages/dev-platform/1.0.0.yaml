@@ -1,0 +1,24 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageVersion
+metadata:
+  name: dev-platform.tkgdev.failk8s.com.1.0.0
+spec:
+  packageName: dev-platform.tkgdev.failk8s.com
+  version: 1.0.0
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: quay.io/failk8s/dev-platform-package:1.0.0
+      template:
+      - ytt:
+          paths:
+          - config/
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m
