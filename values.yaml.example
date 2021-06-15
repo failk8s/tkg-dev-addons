@@ -22,7 +22,7 @@ provided: #! Provide a wildcard certificate, and we will not use a cert-manager 
     key:
 ingress:
   namespace: tanzu-developer
-  type: contour
+  ingress_class: contour
 externaldns:
   name: external-dns
   owner: tanzu

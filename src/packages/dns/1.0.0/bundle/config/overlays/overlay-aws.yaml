@@ -1,5 +1,6 @@
 #@ load("@ytt:overlay", "overlay")
 #@ load("@ytt:data", "data")
+#@ load("@ytt:base64", "base64")
 
 #@ if/end data.values.provider=="aws":
 

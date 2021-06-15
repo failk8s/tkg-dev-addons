@@ -1,17 +1,9 @@
----
 apiVersion: packaging.carvel.dev/v1alpha1
 kind: PackageRepository
 metadata:
-  annotations:
-    kbld.k14s.io/images: |
-      - Metas:
-        - Tag: 1.0.0
-          Type: resolved
-          URL: quay.io/failk8s/tkgdev-repo:1.0.0
-        URL: quay.io/failk8s/tkgdev-repo@sha256:b8c5e48f25c6cff197a0eeef2403ab3811f4cce89250108c428d2a329db7b82d
   name: tkgdev.failk8s.com
   namespace: kapp-controller-packaging-global
 spec:
   fetch:
     imgpkgBundle:
-      image: quay.io/failk8s/tkgdev-repo@sha256:b8c5e48f25c6cff197a0eeef2403ab3811f4cce89250108c428d2a329db7b82d
+      image: quay.io/failk8s/tkgdev-repo:1.0.0

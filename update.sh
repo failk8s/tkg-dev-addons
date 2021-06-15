@@ -80,9 +80,7 @@ function update_one {
         if [ ! -e vendir.lock.yml ]; then
           vendir sync
         fi
-        if [ ! -e .imgpkg/images.yml ]; then
-          kbld -f . --imgpkg-lock-output .imgpkg/images.yml
-        fi
+        kbld -f . --imgpkg-lock-output .imgpkg/images.yml
         imgpkg push --bundle $_registry/$_name-package:$_version --file .
         popd &>/dev/null
     else
@@ -114,12 +112,16 @@ function package_one {
     mv $_target_packages_path/packages/$_name/package.yaml $_target_packages_path/packages/$_name/$_version.yaml
     # Lock images
     mkdir -p $_target_packages_path/.imgpkg
-    kbld -f $_target_packages_path/packages --imgpkg-lock-output $_target_packages_path/.imgpkg/images.yml
+# TODO: Uncomment this and remove following line    
+#     kbld -f $_target_packages_path/packages --imgpkg-lock-output $_target_packages_path/.imgpkg/images.yml
+    cp $_src_templates_path/images-lock.yaml $_target_packages_path/.imgpkg/images.yml
     # Create repository
     imgpkg push -b $_registry/$_repo_name:$_repo_version --file $_target_packages_path
     mkdir -p $_target_k8s_path
     # kbld the repository 
-    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml --ignore-unknown-comments | kbld -f - > $_target_k8s_path/repository.yaml
+# TODO: Uncomment this and remove following line    
+#    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml --ignore-unknown-comments | kbld -f - > $_target_k8s_path/repository.yaml
+    ytt -f $TMPFILE -f $_src_templates_path/repository.yaml --ignore-unknown-comments > $_target_k8s_path/repository.yaml
     delete_temp_valuesfile
     delete_package_valuesfile
 }

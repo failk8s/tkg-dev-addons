@@ -3,6 +3,7 @@
 #@ load("@ytt:yaml", "yaml")
 
 #@ def config():
+namespace: #@ data.values.externaldns.namespace
 domain: #@ data.values.domain
 provider: aws
 aws:

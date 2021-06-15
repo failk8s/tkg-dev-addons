@@ -1,0 +1,12 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@overlay/match by=overlay.subset({"kind":"Certificate", "metadata": {"name": "wildcard"}})
+---
+metadata:
+  namespace: #@ data.values.ingress.namespace
+spec:
+  #@overlay/replace
+  dnsNames:
+  - #@ "*.{}".format(data.values.domain)
+  - #@ "*.{}".format(data.values.wildcard_domain)

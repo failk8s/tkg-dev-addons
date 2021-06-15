@@ -1,0 +1,6 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: PackageMetadata
+metadata:
+  name: secretcopier-operator.tkgdev.failk8s.com
+  namespace: kapp-controller-packaging-global
+spec: {}

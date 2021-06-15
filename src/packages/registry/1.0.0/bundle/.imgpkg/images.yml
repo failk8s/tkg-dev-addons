@@ -1,0 +1,7 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: registry:2.7.1
+  image: index.docker.io/library/registry@sha256:bac2d7050dc4826516650267fe7dc6627e9e11ad653daca0641437abdf18df27
+kind: ImagesLock

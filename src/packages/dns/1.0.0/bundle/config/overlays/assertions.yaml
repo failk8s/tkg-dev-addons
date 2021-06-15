@@ -26,15 +26,15 @@
 
   #@ data.values.aws.txt_owner or assert.fail("values.aws.txt_owner can not be empty")
 
-  #@ if data.values.aws.credentials_secret.acceskeyid:
-  #@   data.values.aws.credentials_secret.acceskeyid!="REPLACE_ME" or assert.fail("data.values.aws.credentials_secret.acceskeyid can not be empty or REPLACE_ME")
+  #@ if data.values.aws.access_key_id:
+  #@   data.values.aws.access_key_id!="REPLACE_ME" or assert.fail("data.values.aws.access_key_id can not be empty or REPLACE_ME")
   #@ else:
-  #@   assert.fail("data.values.aws.credentials_secret.acceskeyid can not be empty or REPLACE_ME")
+  #@   assert.fail("data.values.aws.access_key_id can not be empty or REPLACE_ME")
   #@ end
-  #@ if data.values.aws.credentials_secret.secretaccesskey:
-  #@   data.values.aws.credentials_secret.secretaccesskey!="REPLACE_ME" or assert.fail("data.values.aws.credentials_secret.secretaccesskey can not be empty or REPLACE_ME")
+  #@ if data.values.aws.secret_access_key:
+  #@   data.values.aws.secret_access_key!="REPLACE_ME" or assert.fail("data.values.aws.secret_access_key can not be empty or REPLACE_ME")
   #@ else:
-  #@   assert.fail("data.values.aws.credentials_secret.secretaccesskey can not be empty or REPLACE_ME")
+  #@   assert.fail("data.values.aws.secret_access_key can not be empty or REPLACE_ME")
   #@ end
 #@ end
 

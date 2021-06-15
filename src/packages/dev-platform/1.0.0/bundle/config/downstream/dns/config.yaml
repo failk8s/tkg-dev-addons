@@ -4,5 +4,8 @@ kind: Secret
 metadata:
   name: dns-config
   namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "dns.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting dns.tkgdev.failk8s.com/rbac"
 stringData:
   values.yml: 

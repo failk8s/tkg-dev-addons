@@ -4,8 +4,11 @@ kind: PackageInstall
 metadata:
   name: contour
   namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "contour.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting contour.tkgdev.failk8s.com/rbac"
 spec:
-  serviceAccountName: dev-platform-ctrl-sa
+  serviceAccountName: contour-ctrl-sa
   packageRef:
     refName: contour.tkgdev.failk8s.com
     versionSelection:

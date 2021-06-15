@@ -1,0 +1,6 @@
+#@data/values
+---
+#! The namespace in which to deploy ExternalDNS.
+namespace: REPLACE_ME
+ingress:
+  namespace: REPLACE_ME

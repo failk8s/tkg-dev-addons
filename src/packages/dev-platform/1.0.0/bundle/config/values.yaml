@@ -3,31 +3,25 @@
 domain:
 wildcard_domain:
 privileged_clusterrole_name:  #! In TMC clusters is: vmware-system-tmc-psp-privileged
-cluster_type: tmc  #! Values are: tmc, tkg, minikube 
-local:
-  root_ca:
-    key: #! Add your local CA key in case of cluster_type=minikube
-    crt: #! Add your local CA crt in case of cluster_type=minikube
 aws:
   access_key_id: <FILL_YOUR_INFO>
   secret_access_key: <FILL_YOUR_INFO>
   certs:
     email: user@example.com
     region: eu-west-1
-provided: #! Provide a wildcard certificate, and we will not use a cert-manager Certificate with Let's Encrypt
-  wildcard_tls:
-    #! Provide your tls.crt with yaml |
-    crt:
-    #! Provide your tls.key with yaml |
-    key:
+#! NAMESPACES AND SPECIFIC MODULES
+certmanager:
+  namespace: cert-manager
 ingress:
-  namespace: tanzu-developer
-  type: contour
+  namespace: projectcontour
+  ingress_class: contour
 externaldns:
-  name: external-dns
+  namespace: external-dns
   owner: tanzu
+knativeserving:
+  namespace: knative-serving
 registry:
-  namespace: tanzu-developer
+  namespace: registry
   admin:
     username: admin
     password: admin123!

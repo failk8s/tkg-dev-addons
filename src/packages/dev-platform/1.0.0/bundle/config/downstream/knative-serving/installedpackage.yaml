@@ -4,8 +4,11 @@ kind: PackageInstall
 metadata:
   name: knative-serving
   namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "knative-serving.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting knative-serving.tkgdev.failk8s.com/rbac"
 spec:
-  serviceAccountName: dev-platform-ctrl-sa
+  serviceAccountName: knative-serving-ctrl-sa
   packageRef:
     refName: knative-serving.tkgdev.failk8s.com
     versionSelection:

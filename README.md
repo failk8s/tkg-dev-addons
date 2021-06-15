@@ -11,8 +11,17 @@ kubectl patch app/${GUEST_CLUSTER_NAME}-kapp-controller --patch '{"spec":{"pause
 kapp delete -a workload1-kapp-controller-ctrl -y
 
 # On the workload cluster, update kapp-controller
-kapp deploy -a kc -f https://raw.githubusercontent.com/vmware-tanzu/carvel-kapp-controller/develop/alpha-releases/0.20.0-rc.1.yml -y -n default
+kapp deploy -a kc -f https://raw.githubusercontent.com/vmware-tanzu/carvel-kapp-controller/develop/alpha-releases/v0.20.0-rc.1.yml -y -n default
 ```
+
+In TMC:
+```
+kubectl create clusterrolebinding privileged-cluster-role-binding \
+    --clusterrole=vmware-system-tmc-psp-privileged \
+    --group=system:authenticated
+```
+
+- Contour needs PSP to work fine
 
 ## Build the packages
 Follow these steps:
@@ -33,7 +42,7 @@ kubectl apply -f target/k8s/repository.yaml
 
 Let's verify the Package we have:
 ```
-kubectl get package
+kubectl get package -n kapp-controller-packaging-global
 NAME                                        PACKAGE NAME                         VERSION   AGE
 cert-manager.tkgdev.failk8s.com.1.1.0       cert-manager.tkgdev.failk8s.com      1.1.0     4m57s
 cert-manager.tkgdev.failk8s.com.1.3.1       cert-manager.tkgdev.failk8s.com      1.3.1     4m57s

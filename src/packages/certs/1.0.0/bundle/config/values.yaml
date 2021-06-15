@@ -1,0 +1,18 @@
+#@data/values
+---
+#! Namespace should be the same as cert-manager's namespace
+namespace: REPLACE_ME
+ingress:
+  namespace: REPLACE_ME
+  ingress_class: REPLACE_ME
+
+domain: REPLACE_ME
+wildcard_domain: REPLACE_ME
+
+#! Aws credentials for IAM user with privileges to use cert-manager DNS01
+aws:
+  access_key_id: REPLACE_ME
+  secret_access_key: REPLACE_ME
+  certs:
+    region: eu-west-1
+    email: user@none.com #! If you want to get notified by Let's encrypt of certificate expiration

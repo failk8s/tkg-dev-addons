@@ -4,8 +4,11 @@ kind: PackageInstall
 metadata:
   name: dns
   namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "dns.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting dns.tkgdev.failk8s.com/rbac"
 spec:
-  serviceAccountName: dev-platform-ctrl-sa
+  serviceAccountName: dns-ctrl-sa
   packageRef:
     refName: dns.tkgdev.failk8s.com
     versionSelection:

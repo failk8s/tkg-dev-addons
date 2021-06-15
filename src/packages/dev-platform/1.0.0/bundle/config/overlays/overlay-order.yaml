@@ -4,59 +4,58 @@
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"cert-manager"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "cert-manager"
-    #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting rbac"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting contour.tkgdev.failk8s.com/package"
 
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"contour"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "contour"
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting cert-manager.tkgdev.failk8s.com/package"
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting cert-manager"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting certs.tkgdev.failk8s.com/package"
 
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"certs"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "certs"
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting contour.tkgdev.failk8s.com/package"
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting contour"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting dns.tkgdev.failk8s.com/package"
 
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"dns"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "dns"
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting certs.tkgdev.failk8s.com/package"
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting certs"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting registry.tkgdev.failk8s.com/package"
 
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"registry"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "registry"
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting dns.tkgdev.failk8s.com/package"
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting dns"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting knative-serving.tkgdev.failk8s.com/package"
 
 #@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"knative-serving"}}), expects="1+"
 ---
 metadata:
-  #@overlay/match missing_ok=True
   annotations:
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-group: "knative-serving"
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting registry.tkgdev.failk8s.com/package"
     #@overlay/match missing_ok=True
-    kapp.k14s.io/change-rule: "upsert after upserting dns"
+    kapp.k14s.io/change-rule.package-delete: "delete after deleting secretcopier-operator.tkgdev.failk8s.com/package"
+
+#@overlay/match by=overlay.subset({"kind": "PackageInstall", "metadata":{"name":"secretcopier-operator"}}), expects="1+"
+---
+metadata:
+  annotations:
+    #@overlay/match missing_ok=True
+    kapp.k14s.io/change-rule.package-insert: "upsert after upserting knative-serving.tkgdev.failk8s.com/package"

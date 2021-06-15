@@ -1,0 +1,44 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:assert", "assert")
+
+#@ if data.values.namespace:
+#@   data.values.namespace!="REPLACE_ME" or assert.fail("data.values.namespace can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.namespace can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.ingress.namespace:
+#@   data.values.ingress.namespace!="REPLACE_ME" or assert.fail("data.values.ingress.namespace can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.ingress.namespace can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.ingress.ingress_class:
+#@   data.values.ingress.ingress_class!="REPLACE_ME" or assert.fail("data.values.ingress.ingress_class can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.ingress.ingress_class can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.domain:
+#@   data.values.domain!="REPLACE_ME" or assert.fail("data.values.domain can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.domain can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.wildcard_domain:
+#@   data.values.wildcard_domain!="REPLACE_ME" or assert.fail("data.values.wildcard_domain can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.wildcard_domain can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.aws.access_key_id:
+#@   data.values.aws.access_key_id!="REPLACE_ME" or assert.fail("data.values.aws.access_key_id can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.aws.access_key_id can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.aws.secret_access_key:
+#@   data.values.aws.secret_access_key!="REPLACE_ME" or assert.fail("data.values.aws.secret_access_key can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.aws.secret_access_key can not be empty or REPLACE_ME")
+#@ end

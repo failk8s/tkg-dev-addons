@@ -23,7 +23,8 @@
             "displayName": "Cert Manager",
             "versions": [
                 "1.1.0",
-                "1.3.1"
+                "1.3.1",
+                "1.4.0"
             ]
         },
         {
@@ -40,7 +41,13 @@
                 "1.0.0"
             ]
         },
-
+        {
+            "name": "secretcopier-operator",
+            "displayName": "Secret Copier Operator for Development",
+            "versions": [
+                "1.0.0"
+            ]
+        },
         {
             "name": "dns",
             "displayName": "DNS registration",

@@ -1,0 +1,14 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:assert", "assert")
+
+#@ if data.values.namespace:
+#@   data.values.namespace!="REPLACE_ME" or assert.fail("data.values.namespace can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.namespace can not be empty or REPLACE_ME")
+#@ end
+
+#@ if data.values.ingress.namespace:
+#@   data.values.ingress.namespace!="REPLACE_ME" or assert.fail("data.values.ingress.namespace can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.ingress.namespace can not be empty or REPLACE_ME")
+#@ end

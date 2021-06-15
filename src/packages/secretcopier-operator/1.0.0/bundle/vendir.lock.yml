@@ -1,0 +1,9 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: Don't copy labels from original source secret.
+      sha: 457890a09a2551b9002eec73386b11a37469569f
+    path: .
+  path: config/upstream
+kind: LockConfig

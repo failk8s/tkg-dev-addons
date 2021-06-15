@@ -1,0 +1,7 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/failk8s-operator:latest
+  image: quay.io/failk8s/failk8s-operator@sha256:9ebe0254f7cd0dc4e3aafb2b9c0647123ff38bdae08ab35cb50f48d891c7396b
+kind: ImagesLock

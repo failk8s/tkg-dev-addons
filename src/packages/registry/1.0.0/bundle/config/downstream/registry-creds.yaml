@@ -1,0 +1,9 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-creds
+  namespace: registry
+type: kubernetes.io/dockerconfigjson
+data:
+  .dockerconfigjson: #! INSERT HERE THE CONFIG

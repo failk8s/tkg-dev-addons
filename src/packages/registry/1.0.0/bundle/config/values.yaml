@@ -1,0 +1,16 @@
+#@data/values
+---
+#! Namespace should be the same as cert-manager's namespace
+namespace: registry
+ingress:
+  ingress_class: contour
+domain: REPLACE_ME
+wildcard_domain: REPLACE_ME
+registry:
+  admin:
+    username: admin
+    password: admin123!
+  secrets:
+    #! Generate the secret by doing: `htpasswd -nb admin admin123!` or whatever user/password you want
+    htpasswd: 'admin:$2a$10$UJ9q77n9Vc0d8ppxomAxaeleIaeNX/5faYnt/PZLK20awaxSjxOgy'
+    hashared: replicated
