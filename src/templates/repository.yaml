@@ -4,6 +4,7 @@ apiVersion: packaging.carvel.dev/v1alpha1
 kind: PackageRepository
 metadata:
   name: #@ data.values.domain
+  namespace: kapp-controller-packaging-global
 spec:
   fetch:
     imgpkgBundle:

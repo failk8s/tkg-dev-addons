@@ -108,10 +108,10 @@ function package_one {
     create_package_valuesfile $_name $_version
     # Create packages
     mkdir -p $_target_packages_path/packages/$_name
-    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/package.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
+    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/packagemetadata.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
     # Create package versions
-    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/packageversion.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
-    mv $_target_packages_path/packages/$_name/packageversion.yaml $_target_packages_path/packages/$_name/$_version.yaml
+    ytt  -f $TMPFILE -f $VALUEFILE -f $_src_templates_path/package.yaml --output-files $_target_packages_path/packages/$_name --ignore-unknown-comments
+    mv $_target_packages_path/packages/$_name/package.yaml $_target_packages_path/packages/$_name/$_version.yaml
     # Lock images
     mkdir -p $_target_packages_path/.imgpkg
     kbld -f $_target_packages_path/packages --imgpkg-lock-output $_target_packages_path/.imgpkg/images.yml

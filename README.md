@@ -11,8 +11,7 @@ kubectl patch app/${GUEST_CLUSTER_NAME}-kapp-controller --patch '{"spec":{"pause
 kapp delete -a workload1-kapp-controller-ctrl -y
 
 # On the workload cluster, update kapp-controller
-kapp deploy -a kc -f https://raw.githubusercontent.com/vmware-tanzu/carvel-kapp-controller/develop/alpha-releases/v0.19.0-alpha.10.yml -y -n default
-# kapp deploy -a kc -f https://raw.githubusercontent.com/vmware-tanzu/carvel-kapp-controller/develop/alpha-releases/0.20.0-rc.1.yml -y -n default
+kapp deploy -a kc -f https://raw.githubusercontent.com/vmware-tanzu/carvel-kapp-controller/develop/alpha-releases/0.20.0-rc.1.yml -y -n default
 ```
 
 ## Build the packages
@@ -21,7 +20,7 @@ Follow these steps:
 2. Verify the overlays and tests
 3. Update your [config.yaml](config.yaml) (although json file) with the new packages
 4. Register the image in dev-platform [images.yml](src/packages/dev-platform/1.0.0/bundle/images.yml)
-5. Add a InstalledPackage and a Config descriptor to dev-platform [downstream](src/packages/dev-platform/1.0.0/bundle/downstream) directory. Verify the version of the package
+5. Add a PackageInstall and a Config descriptor to dev-platform [downstream](src/packages/dev-platform/1.0.0/bundle/downstream) directory. Verify the version of the package
 6. Package up the bundle and push it to the registry `./update.sh update-all` or `./update.sh update -n <package-name> -v <package-version>`
 7. Package up the package in the package repository `./update.sh package-manifests`
 
@@ -32,9 +31,9 @@ To install the packagerepository on the cluster:
 kubectl apply -f target/k8s/repository.yaml
 ```
 
-Let's verify the PackageVersions we have:
+Let's verify the Package we have:
 ```
-kubectl get packageversions
+kubectl get package
 NAME                                        PACKAGE NAME                         VERSION   AGE
 cert-manager.tkgdev.failk8s.com.1.1.0       cert-manager.tkgdev.failk8s.com      1.1.0     4m57s
 cert-manager.tkgdev.failk8s.com.1.3.1       cert-manager.tkgdev.failk8s.com      1.3.1     4m57s
@@ -60,25 +59,25 @@ kubectl apply -f src/templates/dev-platform-ns-rbac.yaml
 Configure (or copy and modify) an override profile, and then create a secret from it:
 
 ```
-kubectl create secret generic dev-platform-config -n dev-platform --from-file=values.yaml=./override-jomorales.yaml -o yaml --dry-run=client | kubectl apply -f -
+kubectl create secret generic dev-platform-config -n dev-platform --from-file=values.yaml=./profiles/override-jomorales.yaml -o yaml --dry-run=client | kubectl apply -f -
 ```
 
 
 ### Install the package
 
-Create an InstalledPackage for `dev-platform` package with the new configuration:
+Create an PackageInstall for `dev-platform` package with the new configuration:
 
 ```
 cat <<EOF | kubectl apply -n dev-platform -f -
 ---
 apiVersion: packaging.carvel.dev/v1alpha1
-kind: InstalledPackage
+kind: PackageInstall
 metadata:
   name: dev-platform
 spec:
   serviceAccountName: dev-platform-sa
-  packageVersionRef:
-    packageName: dev-platform.tkgdev.failk8s.com
+  packageRef:
+    refName: dev-platform.tkgdev.failk8s.com
     versionSelection:
       constraints: "1.0.0"
       prereleases: {}
@@ -90,7 +89,7 @@ EOF
 
 If there's an issue, you can verify the problem with:
 ```
-kubectl get installedpackage dev-platform -n dev-platform -o yaml
+kubectl get packageinstall dev-platform -n dev-platform -o yaml
 ```
 
 

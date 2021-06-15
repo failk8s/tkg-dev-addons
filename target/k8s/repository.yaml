@@ -8,9 +8,10 @@ metadata:
         - Tag: 1.0.0
           Type: resolved
           URL: quay.io/failk8s/tkgdev-repo:1.0.0
-        URL: quay.io/failk8s/tkgdev-repo@sha256:3d0f5ef81b49d8583e8eb2a89dc0e31b7bba7e81c27da0e67f4ed60829198dc1
+        URL: quay.io/failk8s/tkgdev-repo@sha256:b8c5e48f25c6cff197a0eeef2403ab3811f4cce89250108c428d2a329db7b82d
   name: tkgdev.failk8s.com
+  namespace: kapp-controller-packaging-global
 spec:
   fetch:
     imgpkgBundle:
-      image: quay.io/failk8s/tkgdev-repo@sha256:3d0f5ef81b49d8583e8eb2a89dc0e31b7bba7e81c27da0e67f4ed60829198dc1
+      image: quay.io/failk8s/tkgdev-repo@sha256:b8c5e48f25c6cff197a0eeef2403ab3811f4cce89250108c428d2a329db7b82d

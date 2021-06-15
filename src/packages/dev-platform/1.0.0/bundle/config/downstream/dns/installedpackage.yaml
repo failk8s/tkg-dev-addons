@@ -1,13 +1,13 @@
 ---
 apiVersion: packaging.carvel.dev/v1alpha1
-kind: InstalledPackage
+kind: PackageInstall
 metadata:
   name: dns
   namespace: dev-platform-ctrl
 spec:
   serviceAccountName: dev-platform-ctrl-sa
-  packageVersionRef:
-    packageName: dns.tkgdev.failk8s.com
+  packageRef:
+    refName: dns.tkgdev.failk8s.com
     versionSelection:
       constraints: "1.0.0"
       prereleases: {}

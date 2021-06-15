@@ -1,9 +1,10 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
-kind: PackageVersion
+kind: Package
 metadata:
   name: dns.tkgdev.failk8s.com.1.0.0
+  namespace: kapp-controller-packaging-global
 spec:
-  packageName: dns.tkgdev.failk8s.com
+  refName: dns.tkgdev.failk8s.com
   version: 1.0.0
   template:
     spec:

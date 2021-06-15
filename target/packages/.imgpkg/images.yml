@@ -15,7 +15,7 @@ images:
   image: quay.io/failk8s/contour-package@sha256:b6fc886398cfd42ca8e9423951a336929ec4282e6c2cacbc913ca432ba5c9d9a
 - annotations:
     kbld.carvel.dev/id: quay.io/failk8s/dev-platform-package:1.0.0
-  image: quay.io/failk8s/dev-platform-package@sha256:c8e253eda703ccb0f3c0b284081878a21e0cc74e88aad2f1275cab871895392b
+  image: quay.io/failk8s/dev-platform-package@sha256:aab76989273a0f8c0148c2d2bd1151749d550a82062a3a9163bce06a60080182
 - annotations:
     kbld.carvel.dev/id: quay.io/failk8s/dns-package:1.0.0
   image: quay.io/failk8s/dns-package@sha256:8a0dff058e73115a80dafaaa1ac3c190646ce56297511f01d83ce01b9f471bf5

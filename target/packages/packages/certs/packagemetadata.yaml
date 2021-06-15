@@ -1,5 +1,6 @@
 apiVersion: data.packaging.carvel.dev/v1alpha1
-kind: Package
+kind: PackageMetadata
 metadata:
   name: certs.tkgdev.failk8s.com
+  namespace: kapp-controller-packaging-global
 spec: {}
