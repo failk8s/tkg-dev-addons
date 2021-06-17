@@ -4,6 +4,7 @@ metadata:
   name: tkgdev.failk8s.com
   namespace: kapp-controller-packaging-global
 spec:
+  syncPeriod: 1m
   fetch:
     imgpkgBundle:
       image: quay.io/failk8s/tkgdev-repo:1.0.0

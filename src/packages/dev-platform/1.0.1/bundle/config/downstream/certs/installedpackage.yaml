@@ -1,0 +1,19 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: certs
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "certs.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting certs.tkgdev.failk8s.com/rbac"
+spec:
+  serviceAccountName: certs-ctrl-sa
+  packageRef:
+    refName: certs.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.0.0"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: certs-config

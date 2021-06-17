@@ -40,9 +40,9 @@ To install the packagerepository on the cluster:
 kubectl apply -f target/k8s/repository.yaml
 ```
 
-Let's verify the Package we have:
+Let's verify the Packages we have:
 ```
-kubectl get package -n kapp-controller-packaging-global
+watch kubectl get package -n kapp-controller-packaging-global
 NAME                                        PACKAGE NAME                         VERSION   AGE
 cert-manager.tkgdev.failk8s.com.1.1.0       cert-manager.tkgdev.failk8s.com      1.1.0     4m57s
 cert-manager.tkgdev.failk8s.com.1.3.1       cert-manager.tkgdev.failk8s.com      1.3.1     4m57s
@@ -96,12 +96,80 @@ spec:
 EOF
 ```
 
+To see the packageinstall in the cluster:
+```
+watch kubectl get packageinstall -A
+```
+
+
 If there's an issue, you can verify the problem with:
 ```
 kubectl get packageinstall dev-platform -n dev-platform -o yaml
 ```
 
+To see the services in the cluster:
+```
+kubectl get certs -n projectcontour
+kubectl get orders -n projectcontour
+kubectl get ingress -n registry
+docker login registry.failk8s.com -u admin -p admin123!
+```
 
 ## Update a package
 
-1. Update the version of the installed package in dv-platform package
+Update the version of the installed package in dev-platform package
+
+```
+cat <<EOF | kubectl apply -n dev-platform -f -
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: dev-platform
+spec:
+  serviceAccountName: dev-platform-sa
+  packageRef:
+    refName: dev-platform.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.0.1"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: dev-platform-config
+EOF
+```
+
+To see the packageinstall in the cluster:
+```
+watch kubectl get packageinstall -A
+```
+
+
+If there's an issue, you can verify the problem with:
+```
+kubectl get packageinstall dev-platform -n dev-platform -o yaml
+```
+
+To see the services in the cluster:
+```
+kubectl get certs -n projectcontour
+kubectl get orders -n projectcontour
+kubectl get ingress -n registry
+docker login registry.failk8s.com -u admin -p admin123!
+kubectl get ingress -n testapp
+kubectl get ksvc -n testknativeapp
+```
+
+## Update a package
+
+Update the version of the installed package in dev-platform package
+
+```
+kubectl delete packageinstall dev-platform -n dev-platform
+```
+
+Watch packages as they are deleted:
+
+```
+watch get kubectl packageinstall -A
+```

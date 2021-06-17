@@ -6,6 +6,7 @@ metadata:
   name: #@ data.values.domain
   namespace: kapp-controller-packaging-global
 spec:
+  syncPeriod: 1m
   fetch:
     imgpkgBundle:
       image: #@ "{}/{}:{}".format(data.values.registry, data.values.repository.name, data.values.repository.version)

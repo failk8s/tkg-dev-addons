@@ -1,0 +1,24 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
+
+#@ def config():
+namespace: #@ data.values.registry.namespace 
+domain: #@ data.values.domain
+wildcard_domain: #@ data.values.wildcard_domain
+ingress:
+  ingress_class: #@ data.values.ingress.ingress_class
+registry:
+  admin:
+    username: #@ data.values.registry.admin.username
+    password: #@ data.values.registry.admin.password
+  secrets:
+    #! Generate the secret by doing: `htpasswd -nb admin admin123!` or whatever user/password you want
+    htpasswd: #@ data.values.registry.secrets.htpasswd
+    hashared: #@ data.values.registry.secrets.hashared
+#@ end
+
+#@overlay/match by=overlay.subset({"kind": "Secret", "metadata":{"name":"registry-config"}})
+---
+stringData:
+  values.yml: #@ yaml.encode(config())

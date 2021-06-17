@@ -4,14 +4,15 @@ domain:
 wildcard_domain:
 privileged_clusterrole_name:  #! In TMC clusters is: vmware-system-tmc-psp-privileged
 aws:
-  access_key_id: <FILL_YOUR_INFO>
-  secret_access_key: <FILL_YOUR_INFO>
+  access_key_id: REPLACE_ME
+  secret_access_key: REPLACE_ME
   certs:
-    email: user@example.com
+    email: user@none.com
     region: eu-west-1
 #! NAMESPACES AND SPECIFIC MODULES
 certmanager:
   namespace: cert-manager
+  cluster_issuer_name: wildcard
 ingress:
   namespace: projectcontour
   ingress_class: contour

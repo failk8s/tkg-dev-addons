@@ -1,0 +1,13 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
+
+#@ def config():
+namespace: #@ data.values.testknativeapp.namespace 
+privileged_clusterrole_name: #@ data.values.privileged_clusterrole_name
+#@ end
+
+#@overlay/match by=overlay.subset({"kind": "Secret", "metadata":{"name":"testknativeapp-config"}})
+---
+stringData:
+  values.yml: #@ yaml.encode(config())

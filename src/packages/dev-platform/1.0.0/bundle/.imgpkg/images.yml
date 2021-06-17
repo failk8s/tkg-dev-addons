@@ -20,9 +20,12 @@ images:
     kbld.carvel.dev/id: quay.io/failk8s/dns-package:1.0.0
   image: quay.io/failk8s/dns-package@sha256:83d83eb5375b61bb253a3531128e8835b07e46ceaef1ae6141e75a8ff376835f
 - annotations:
-    kbld.carvel.dev/id: quay.io/failk8s/knative-serving-package:0.21.0
-  image: quay.io/failk8s/knative-serving-package@sha256:cbc3b4d8c49caaca7303c7361d71707672fa7462fe1727b997c9ca3e45283e11
+    kbld.carvel.dev/id: quay.io/failk8s/knative-serving-package:0.22.0
+  image: quay.io/failk8s/knative-serving-package@sha256:bf9cf78a9f3a159aee1ea82347c086d65da79f3281a744bea54ae36552519934
 - annotations:
     kbld.carvel.dev/id: quay.io/failk8s/registry-package:1.0.0
   image: quay.io/failk8s/registry-package@sha256:bc242e77bdac8d94b7307f9ef41077db232074a8b47b4629dcd7c52f988a7fc2
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/secretcopier-operator-package:1.0.0
+  image: quay.io/failk8s/secretcopier-operator-package@sha256:3b703323b0f7261e2a2d2289981aa9d9083f3bcc4bf932be345b4de9b2f4a273
 kind: ImagesLock

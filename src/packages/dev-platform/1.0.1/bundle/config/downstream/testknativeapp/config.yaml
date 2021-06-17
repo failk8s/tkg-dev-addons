@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: testknativeapp-config
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "testknativeapp.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting testknativeapp.tkgdev.failk8s.com/rbac"
+stringData:
+  values.yml: 

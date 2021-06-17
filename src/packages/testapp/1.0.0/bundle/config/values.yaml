@@ -1,0 +1,6 @@
+#@data/values
+---
+#! The namespace in which to deploy ExternalDNS.
+namespace: REPLACE_ME
+privileged_clusterrole_name: 
+wildcard_domain: REPLACE_ME

@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cert-manager-config
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "cert-manager.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting cert-manager.tkgdev.failk8s.com/rbac"
+stringData:
+  values.yml: 

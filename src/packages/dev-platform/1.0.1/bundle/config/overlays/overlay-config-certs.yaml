@@ -1,0 +1,23 @@
+#@ load("@ytt:overlay", "overlay")
+#@ load("@ytt:data", "data")
+#@ load("@ytt:yaml", "yaml")
+
+#@ def config():
+namespace: #@ data.values.certmanager.namespace
+ingress:
+  namespace: #@ data.values.ingress.namespace
+  ingress_class: #@ data.values.ingress.ingress_class
+domain: #@ data.values.domain
+wildcard_domain: #@ data.values.wildcard_domain
+aws:
+  access_key_id: #@ data.values.aws.access_key_id
+  secret_access_key: #@ data.values.aws.secret_access_key
+  certs:
+    region: #@ data.values.aws.certs.region
+    email: #@ data.values.aws.certs.email
+#@ end
+
+#@overlay/match by=overlay.subset({"kind": "Secret", "metadata":{"name":"certs-config"}})
+---
+stringData:
+  values.yml: #@ yaml.encode(config())

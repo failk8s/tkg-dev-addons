@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: registry-config
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "registry.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting registry.tkgdev.failk8s.com/rbac"
+stringData:
+  values.yml: 

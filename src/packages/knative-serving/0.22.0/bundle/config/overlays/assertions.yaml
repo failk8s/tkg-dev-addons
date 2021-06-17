@@ -1,0 +1,13 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:assert", "assert")
+
+#! Assert domain type
+#@ data.values.domain.type=="real" or data.values.domain.type=="xip.io" or data.values.domain.type=="nip.io" or assert.fail("values.domain.type accepted values are: real, xip.io, nip.io")
+
+#@ if data.values.domain.type=="real":
+#@ if data.values.domain.name:
+#@   data.values.domain.name!="REPLACE_ME" or assert.fail("data.values.domain.name can not be empty or REPLACE_ME")
+#@ else:
+#@   assert.fail("data.values.domain.name can not be empty or REPLACE_ME")
+#@ end
+#@ end

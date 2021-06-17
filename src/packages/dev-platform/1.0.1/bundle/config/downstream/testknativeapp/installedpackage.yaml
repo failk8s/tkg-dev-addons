@@ -1,0 +1,19 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: testknativeapp
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "testknativeapp.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting testknativeapp.tkgdev.failk8s.com/rbac"
+spec:
+  serviceAccountName: testknativeapp-ctrl-sa
+  packageRef:
+    refName: testknativeapp.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.0.0"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: testknativeapp-config

@@ -1,0 +1,30 @@
+#@ load("@ytt:data", "data")
+#@ load("@ytt:overlay", "overlay")
+
+#@ if data.values.namespace!="testknativeapp":
+
+#@overlay/match by=overlay.subset({"kind":"Namespace", "metadata":{"name": "testknativeapp"}})
+#@overlay/remove
+---
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: #@ data.values.namespace
+
+#@overlay/match by=overlay.subset({"metadata": {"namespace": "testknativeapp"}}),expects="0+"
+---
+metadata:
+  #@overlay/match missing_ok=True
+  namespace: #@ data.values.namespace
+
+#@overlay/match by=overlay.subset({"kind":"ClusterRoleBinding", "metadata": {"name": "testknativeapp"}}),expects="0+"
+---
+subjects:
+#@overlay/match by=overlay.all
+- kind: ServiceAccount
+  #@overlay/match missing_ok=True
+  namespace: #@ data.values.namespace
+
+#@ end

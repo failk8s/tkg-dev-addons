@@ -1,0 +1,6 @@
+#@data/values
+---
+namespace: projectcontour
+domain: REPLACE_ME
+wildcard_domain: REPLACE_ME
+privileged_clusterrole_name: 

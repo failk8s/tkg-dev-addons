@@ -7,5 +7,5 @@ images:
 - image: quay.io/failk8s/dns-package:1.0.0
 - image: quay.io/failk8s/registry-package:1.0.0
 - image: quay.io/failk8s/contour-package:1.10.0
-- image: quay.io/failk8s/knative-serving-package:0.21.0
-- image: quay.io/failk8s/secretcopieroperator:1.0.0
+- image: quay.io/failk8s/knative-serving-package:0.22.0
+- image: quay.io/failk8s/secretcopier-operator-package:1.0.0

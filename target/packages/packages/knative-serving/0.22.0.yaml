@@ -1,0 +1,25 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: knative-serving.tkgdev.failk8s.com.0.22.0
+  namespace: kapp-controller-packaging-global
+spec:
+  refName: knative-serving.tkgdev.failk8s.com
+  version: 0.22.0
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: quay.io/failk8s/knative-serving-package:0.22.0
+      template:
+      - ytt:
+          paths:
+          - config/
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m

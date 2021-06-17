@@ -1,0 +1,19 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: cert-manager
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "cert-manager.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting cert-manager.tkgdev.failk8s.com/rbac"
+spec:
+  serviceAccountName: cert-manager-ctrl-sa
+  packageRef:
+    refName: cert-manager.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.3.1"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: cert-manager-config

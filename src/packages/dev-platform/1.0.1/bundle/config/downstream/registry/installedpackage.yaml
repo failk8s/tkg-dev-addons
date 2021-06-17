@@ -1,0 +1,19 @@
+---
+apiVersion: packaging.carvel.dev/v1alpha1
+kind: PackageInstall
+metadata:
+  name: registry
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "registry.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting registry.tkgdev.failk8s.com/rbac"
+spec:
+  serviceAccountName: registry-ctrl-sa
+  packageRef:
+    refName: registry.tkgdev.failk8s.com
+    versionSelection:
+      constraints: "1.0.0"
+      prereleases: {}
+  values:
+  - secretRef:
+      name: registry-config

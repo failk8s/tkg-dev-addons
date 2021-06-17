@@ -1,0 +1,40 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/cert-manager-package:1.1.0
+  image: quay.io/failk8s/cert-manager-package@sha256:04bd4e6198a84944cbb763cd5064ba18470053abda4098345c1747850f14b6d6
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/cert-manager-package:1.3.1
+  image: quay.io/failk8s/cert-manager-package@sha256:2a26fe8c608f8f01ea65ee1a3fd3bd75d005ac723af37249158a62b0927a2676
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/cert-manager-package:1.4.0
+  image: quay.io/failk8s/cert-manager-package@sha256:c21d1408a75f8e2e695839132e482a91abb614abf0ac321987486e3f751ecbbe
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/certs-package:1.0.0
+  image: quay.io/failk8s/certs-package@sha256:bc242e77bdac8d94b7307f9ef41077db232074a8b47b4629dcd7c52f988a7fc2
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/contour-package:1.10.0
+  image: quay.io/failk8s/contour-package@sha256:b6fc886398cfd42ca8e9423951a336929ec4282e6c2cacbc913ca432ba5c9d9a
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/contour-package:1.15.0
+  image: quay.io/failk8s/contour-package@sha256:c18433c234578b4a297e752799e6dc84fcc64199d57e2a947a5da11023aa81ac
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/dns-package:1.0.0
+  image: quay.io/failk8s/dns-package@sha256:83d83eb5375b61bb253a3531128e8835b07e46ceaef1ae6141e75a8ff376835f
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/knative-serving-package:0.22.0
+  image: quay.io/failk8s/knative-serving-package@sha256:bf9cf78a9f3a159aee1ea82347c086d65da79f3281a744bea54ae36552519934
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/registry-package:1.0.0
+  image: quay.io/failk8s/registry-package@sha256:bc242e77bdac8d94b7307f9ef41077db232074a8b47b4629dcd7c52f988a7fc2
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/secretcopier-operator-package:1.0.0
+  image: quay.io/failk8s/secretcopier-operator-package@sha256:3b703323b0f7261e2a2d2289981aa9d9083f3bcc4bf932be345b4de9b2f4a273
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/testapp-package:1.0.0
+  image: quay.io/failk8s/testapp-package@sha256:0a1c0d5d6ab95751ec38726097cd805e7059b6dcc69f6c8b533f9a89c962a66f
+- annotations:
+    kbld.carvel.dev/id: quay.io/failk8s/testknativeapp-package:1.0.0
+  image: quay.io/failk8s/testknativeapp-package@sha256:470a4827f0a502a5e4bb9b521f70ffea9ef5bdc605956aa4c193956e65821e4d
+kind: ImagesLock

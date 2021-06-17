@@ -1,0 +1,11 @@
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: knative-serving-config
+  namespace: dev-platform-ctrl
+  annotations:
+    kapp.k14s.io/change-group: "knative-serving.tkgdev.failk8s.com/package"
+    kapp.k14s.io/change-rule.insert: "upsert after upserting knative-serving.tkgdev.failk8s.com/rbac"
+stringData:
+  values.yml: 

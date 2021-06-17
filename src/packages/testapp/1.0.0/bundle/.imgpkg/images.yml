@@ -1,0 +1,7 @@
+---
+apiVersion: imgpkg.carvel.dev/v1alpha1
+images:
+- annotations:
+    kbld.carvel.dev/id: gcr.io/kuar-demo/kuard-amd64:1
+  image: gcr.io/kuar-demo/kuard-amd64@sha256:bd17153e9a3319f401acc7a27759243f37d422c06cbbf01cb3e1f54bbbfe14f4
+kind: ImagesLock

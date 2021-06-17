@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testapp 
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: testapp
+  namespace: testapp
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: testapp
+  name: testapp
+  namespace: testapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testapp
+  template:
+    metadata:
+      labels:
+        app: testapp
+    spec:
+      containers:
+      - image: gcr.io/kuar-demo/kuard-amd64:1
+        name: testapp
+      serviceAccountName: testapp
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: testapp
+  name: testapp
+  namespace: testapp
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: testapp
+  sessionAffinity: None
+  type: ClusterIP
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: testapp
+  labels:
+    app: testapp
+  namespace: testapp
+spec:
+  rules:
+  - host: HOST
+    http:
+      paths:
+      - backend:
+          serviceName: testapp
+          servicePort: 80
+        path: /

@@ -1,0 +1,25 @@
+apiVersion: data.packaging.carvel.dev/v1alpha1
+kind: Package
+metadata:
+  name: contour.tkgdev.failk8s.com.1.15.0
+  namespace: kapp-controller-packaging-global
+spec:
+  refName: contour.tkgdev.failk8s.com
+  version: 1.15.0
+  template:
+    spec:
+      fetch:
+      - imgpkgBundle:
+          image: quay.io/failk8s/contour-package:1.15.0
+      template:
+      - ytt:
+          paths:
+          - config/
+      - kbld:
+          paths:
+          - '-'
+          - .imgpkg/images.yml
+      deploy:
+      - kapp:
+          rawOptions:
+          - --wait-timeout=5m

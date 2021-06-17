@@ -31,7 +31,8 @@
             "name": "contour",
             "displayName": "Contour",
             "versions": [
-                "1.10.0"
+                "1.10.0",
+                "1.15.0"
             ]
         },
         {
@@ -66,14 +67,29 @@
             "name": "knative-serving",
             "displayName": "KNative Serving",
             "versions": [
-                "0.21.0"
+                "0.22.0"
+            ]
+        },
+        {
+            "name": "testapp",
+            "displayName": "K8S test application",
+            "versions": [
+                "1.0.0"
+            ]
+        },
+        {
+            "name": "testknativeapp",
+            "displayName": "Knative test application",
+            "versions": [
+                "1.0.0"
             ]
         },
         {
             "name": "dev-platform",
             "displayName": "Development platform",
             "versions": [
-                "1.0.0"
+                "1.0.0",
+                "1.0.1"
             ]
         }
     ]
